@@ -65,6 +65,6 @@ public class EvasiveV1Manual extends OpMode {
      * The system calls this member once when the OpMode is disabled.
      */
     @Override public void stop () {
-
+        // Code here...
     }
 }
