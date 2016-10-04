@@ -29,14 +29,14 @@ public class EvasiveV1Manual extends OpMode {
         try {
             this.leftDriveMotor = this.hardwareMap.dcMotor.get("leftDriveMotor");
         } catch (Exception e) {
-            DbgLog.msg (e.getLocalizedMessage());
+            DbgLog.msg(e.getLocalizedMessage());
         }
         // Get the right drive motor.
         try {
             this.rightDriveMotor = this.hardwareMap.dcMotor.get("rightDriveMotor");
             this.rightDriveMotor.setDirection (DcMotor.Direction.REVERSE);
         } catch (Exception e) {
-            DbgLog.msg (e.getLocalizedMessage());
+            DbgLog.msg(e.getLocalizedMessage());
         }
     }
 
