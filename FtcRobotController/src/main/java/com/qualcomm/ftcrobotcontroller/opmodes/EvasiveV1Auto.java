@@ -9,7 +9,9 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
  * Created by allinson on 9/1/16.
  */
 public class EvasiveV1Auto extends OpMode {
-
+    int cycleCount; // cycle counter
+    double distFront; // value for distance sensor
+    double distBack;  // value for distance sensor
     /*
      * The left motor controller instance.
      */
@@ -73,9 +75,12 @@ public class EvasiveV1Auto extends OpMode {
     @Override public void loop () {
 
         // Values come from distance sensors
-
-        double distFront = this.distSensorFront.getUltrasonicLevel();
-        double distBack = this.distSensorBack.getUltrasonicLevel();
+        if (cycleCount % 10 ==0)
+        {
+            distFront = this.distSensorFront.getUltrasonicLevel();
+            distBack = this.distSensorBack.getUltrasonicLevel();
+        }
+        cycleCount++;
 
         double motorLeft = 1;
         double motorRight = 1;
@@ -94,6 +99,7 @@ public class EvasiveV1Auto extends OpMode {
 
         this.leftDriveMotor.setPower(motorLeft);
         this.rightDriveMotor.setPower(motorRight);
+
 
     }
 
