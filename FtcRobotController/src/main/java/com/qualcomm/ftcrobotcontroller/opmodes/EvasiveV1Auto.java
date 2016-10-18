@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import com.qualcomm.robotcore.robocol.Telemetry;
 
 /**
  * Created by allinson on 9/1/16.
@@ -32,27 +33,28 @@ public class EvasiveV1Auto extends OpMode {
      */
     @Override public void init () {
         // Get the left drive motor.
+
         try {
-            this.leftDriveMotor = this.hardwareMap.dcMotor.get("leftDriveMotor");
+            this.leftDriveMotor = this.hardwareMap.dcMotor.get("leftDriveMotor"); //drive 1
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
         // Get the right drive motor.
         try {
-            this.rightDriveMotor = this.hardwareMap.dcMotor.get("rightDriveMotor");
+            this.rightDriveMotor = this.hardwareMap.dcMotor.get("rightDriveMotor"); //drive 2
             this.rightDriveMotor.setDirection (DcMotor.Direction.REVERSE);
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
         // Get the back distance sensor
         try {
-            this.distSensorBack = this.hardwareMap.ultrasonicSensor.get("distSensorBack");
+            this.distSensorBack = this.hardwareMap.ultrasonicSensor.get("distSensorBack"); //drive 4
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
         // Get the front distance sensor
         try {
-            this.distSensorFront = this.hardwareMap.ultrasonicSensor.get("distSensorFront");
+            this.distSensorFront = this.hardwareMap.ultrasonicSensor.get("distSensorFront"); //drive 5
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
@@ -75,6 +77,7 @@ public class EvasiveV1Auto extends OpMode {
     @Override public void loop () {
 
         // Values come from distance sensors
+      this.telemetry.addData("cyclecount:", cycleCount);
         if (cycleCount % 10 ==0)
         {
             distFront = this.distSensorFront.getUltrasonicLevel();
@@ -84,18 +87,27 @@ public class EvasiveV1Auto extends OpMode {
 
         double motorLeft = 1;
         double motorRight = 1;
+        this.telemetry.addData("distFront:", distFront) ;
+        this.telemetry.addData("distBack:", distBack);
 
-        if (distFront > distBack) {
+        if ((distFront > 25 || distFront < 20) && (distBack > 25 || distBack < 20)) {
 
-            motorLeft = 0;
+            if (distFront > distBack) {
+
+                motorLeft = 0;
+
+            } else if (distBack > distFront) {
+
+                motorRight = 0;
+
+            }
 
         }
 
-        else if (distBack > distFront) {
+        this.telemetry.addData("rightDriveMotor", motorRight);
+        this.telemetry.addData("leftDriveMotor", motorLeft);
 
-            motorRight = 0;
 
-        }
 
         this.leftDriveMotor.setPower(motorLeft);
         this.rightDriveMotor.setPower(motorRight);
