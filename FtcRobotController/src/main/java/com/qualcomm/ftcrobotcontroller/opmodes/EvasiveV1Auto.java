@@ -4,6 +4,7 @@ import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.robocol.Telemetry;
 
 /**
@@ -13,6 +14,7 @@ public class EvasiveV1Auto extends OpMode {
     int cycleCount; // cycle counter
     double distFront; // value for distance sensor
     double distBack;  // value for distance sensor
+    int whiteSensor; // value of lightSensor between 0 and 100
     /*
      * The left motor controller instance.
      */
@@ -25,6 +27,9 @@ public class EvasiveV1Auto extends OpMode {
 
     protected UltrasonicSensor distSensorFront, distSensorBack;
     // distSensorFront - port 4; distSensorBack - Port 5
+    protected LightSensor whiteLine;
+
+
 
     /**
      * Perform any actions that are necessary when the OpMode is enabled.
@@ -58,6 +63,12 @@ public class EvasiveV1Auto extends OpMode {
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
+        // get lightSenor
+        try {
+            this.whiteLine = this.hardwareMap.lightSensor.get("lightSensor"); //drive 5
+        } catch (Exception e) {
+            DbgLog.msg(e.getLocalizedMessage());
+        }
     }
 
     /**
@@ -78,7 +89,7 @@ public class EvasiveV1Auto extends OpMode {
 
         // Values come from distance sensors
       this.telemetry.addData("cyclecount:", cycleCount);
-        if (cycleCount % 10 ==0)
+        if (cycleCount % 100 ==0)
         {
             distFront = this.distSensorFront.getUltrasonicLevel();
             distBack = this.distSensorBack.getUltrasonicLevel();
@@ -90,23 +101,33 @@ public class EvasiveV1Auto extends OpMode {
         this.telemetry.addData("distFront:", distFront) ;
         this.telemetry.addData("distBack:", distBack);
 
-        if ((distFront > 25 || distFront < 20) && (distBack > 25 || distBack < 20)) {
+
+        //if ((distFront > 25 || distFront < 20) && (distBack > 25 || distBack < 20)) {
+
 
             if (distFront > distBack) {
 
-                motorLeft = 0;
+                motorLeft = 0.1;
 
             } else if (distBack > distFront) {
 
-                motorRight = 0;
+                motorRight = 0.1;
 
             }
 
-        }
+        //}
 
         this.telemetry.addData("rightDriveMotor", motorRight);
         this.telemetry.addData("leftDriveMotor", motorLeft);
 
+        whiteSensor = this.whiteLine.getLightDetectedRaw();
+        this.telemetry.addData("lightsensor", whiteSensor);
+
+        if (whiteSensor > 150)
+        {
+            motorLeft = 0;
+            motorRight = 0;
+        }
 
 
         this.leftDriveMotor.setPower(motorLeft);
