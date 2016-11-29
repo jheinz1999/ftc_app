@@ -2,6 +2,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.LightSensor;
@@ -14,7 +15,7 @@ public class EvasiveV1Auto extends OpMode {
     int cycleCount; // cycle counter
     double distFront; // value for distance sensor
     double distBack;  // value for distance sensor
-    int whiteSensor; // value of lightSensor between 0 and 100
+//    int whiteSensor; // value of lightSensor between 0 and 100
     /*
      * The left motor controller instance.
      */
@@ -27,7 +28,7 @@ public class EvasiveV1Auto extends OpMode {
 
     protected UltrasonicSensor distSensorFront, distSensorBack;
     // distSensorFront - port 4; distSensorBack - Port 5
-    protected LightSensor whiteLine;
+    protected ColorSensor whiteLineSensor;
 
 
 
@@ -65,7 +66,7 @@ public class EvasiveV1Auto extends OpMode {
         }
         // get lightSenor
         try {
-            this.whiteLine = this.hardwareMap.lightSensor.get("lightSensor"); //drive 5
+            this.whiteLineSensor = this.hardwareMap.colorSensor.get("colorSensor"); //drive 5
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
@@ -93,6 +94,11 @@ public class EvasiveV1Auto extends OpMode {
         {
             distFront = this.distSensorFront.getUltrasonicLevel();
             distBack = this.distSensorBack.getUltrasonicLevel();
+            this.whiteLineSensor.enableLed(true);
+            this.telemetry.addData("r", whiteLineSensor.red());
+            this.telemetry.addData("g", whiteLineSensor.green());
+            this.telemetry.addData("b", whiteLineSensor.blue());
+            //this.whiteLineSensor.enableLed(false);
         }
         cycleCount++;
 
@@ -120,14 +126,11 @@ public class EvasiveV1Auto extends OpMode {
         this.telemetry.addData("rightDriveMotor", motorRight);
         this.telemetry.addData("leftDriveMotor", motorLeft);
 
-        whiteSensor = this.whiteLine.getLightDetectedRaw();
-        this.telemetry.addData("lightsensor", whiteSensor);
-
-        if (whiteSensor > 150)
-        {
-            motorLeft = 0;
-            motorRight = 0;
-        }
+//        if (whiteSensor > 150)
+//        {
+//            motorLeft = 0;
+//            motorRight = 0;
+//        }
 
 
         this.leftDriveMotor.setPower(motorLeft);
