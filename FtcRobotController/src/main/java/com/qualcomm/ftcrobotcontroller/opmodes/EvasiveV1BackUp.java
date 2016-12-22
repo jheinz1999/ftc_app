@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.robocol.Telemetry;
 
@@ -15,6 +16,7 @@ public class EvasiveV1BackUp extends OpMode {
     int cycleCount; // cycle counter
     double distFront; // value for distance sensor
     double distBack;  // value for distance sensor
+    int pressedbutton = 0;
     //    int whiteSensor; // value of lightSensor between 0 and 100
     /*
      * The left motor controller instance.
@@ -31,7 +33,7 @@ public class EvasiveV1BackUp extends OpMode {
     // distSensorFront - port 4; distSensorBack - Port 5
     protected ColorSensor whiteLineSensor;
 
-
+    protected TouchSensor touchSensor;
 
     /**
      * Perform any actions that are necessary when the OpMode is enabled.
@@ -68,6 +70,12 @@ public class EvasiveV1BackUp extends OpMode {
         // get lightSenor
         try {
             this.whiteLineSensor = this.hardwareMap.colorSensor.get("colorSensor"); //drive 5
+        } catch (Exception e) {
+            DbgLog.msg(e.getLocalizedMessage());
+        }
+
+        try {
+            this.whiteLineSensor = this.hardwareMap.colorSensor.get("touchSensor"); //drive 5
         } catch (Exception e) {
             DbgLog.msg(e.getLocalizedMessage());
         }
@@ -111,16 +119,28 @@ public class EvasiveV1BackUp extends OpMode {
 
         //if ((distFront > 25 || distFront < 20) && (distBack > 25 || distBack < 20)) {
 
+        if (!this.touchSensor.isPressed()) {
+            if (distFront > distBack) {
 
-        if (distFront > distBack) {
+                motorLeft = 0.1;
 
-            motorLeft = 0.1;
+            } else if (distBack > distFront) {
 
-        } else if (distBack > distFront) {
+                motorRight = 0.1;
 
-            motorRight = 0.1;
-
+            }
         }
+        else if (this.touchSensor.isPressed())
+        {
+            pressedbutton = 1;
+        }
+
+        if (pressedbutton == 1)
+        {
+            motorLeft = 0;
+            motorRight = 0;
+        }
+
 
         //}
 
