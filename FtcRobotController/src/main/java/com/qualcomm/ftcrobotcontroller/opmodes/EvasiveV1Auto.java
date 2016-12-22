@@ -20,7 +20,7 @@ public class EvasiveV1Auto extends OpMode {
      * The left motor controller instance.
      */
     protected DcMotor leftDriveMotor;
-VAGINA
+
     /*
      * The right motor controller instance.
      * GIT TEST 123
